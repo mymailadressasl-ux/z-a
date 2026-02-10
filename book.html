@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bu Kitap Senin İçin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Dancing+Script:wght@600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      display: flex;
+      min-height: 100dvh;
+      perspective: 1000px;
+      font: 1em/1.6 "Poppins", sans-serif;
+      overflow: hidden;
+      color: hsl(180 68% 5%);
+      background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+      background-size: 400% 400%;
+      animation: gradientAnimation 12s ease infinite;
+      position: relative;
+    }
+
+    @keyframes gradientAnimation {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .book {
+      position: relative;
+      display: flex;
+      margin: auto;
+      width: 42cqmin;
+      /* Increased width */
+      pointer-events: none;
+      transform-style: preserve-3d;
+      transition: translate 1s;
+      translate: calc(min(var(--c), 1) * 50%) 0%;
+      rotate: 1 0 0 30deg;
+    }
+
+    .page {
+      --thickness: 4;
+      flex: none;
+      display: flex;
+      width: 100%;
+      font-size: 2.2cqmin;
+      /* Slightly increased font size */
+      pointer-events: all;
+      user-select: none;
+      transform-style: preserve-3d;
+      transform-origin: left center;
+      transition: transform 1s,
+        rotate 1s ease-in calc((min(var(--i), var(--c)) - max(var(--i), var(--c))) * 50ms);
+      translate: calc(var(--i) * -100%) 0px 0px;
+      transform: translateZ(calc((var(--c) - var(--i) - 0.5) * calc(var(--thickness) * 0.23cqmin)));
+      rotate: 0 1 0 calc(clamp(0, var(--c) - var(--i), 1) * -180deg);
+    }
+
+    .front,
+    .back {
+      position: relative;
+      flex: none;
+      width: 100%;
+      backface-visibility: hidden;
+      overflow: hidden;
+      background-color: #fff;
+      translate: 0px;
+    }
+
+    .back {
+      translate: -100% 0;
+      rotate: 0 1 0 180deg;
+    }
+
+    .book {
+      counter-reset: page -1;
+    }
+
+    .book a {
+      color: inherit;
+    }
+
+    .page {
+      box-shadow: 0em 0.5em 1em -0.2em #00000020;
+    }
+
+    .front,
+    .back {
+      display: flex;
+      flex-flow: column wrap;
+      justify-content: space-between;
+      padding: 2em;
+      border: 1px solid #0002;
+    }
+
+    .front:has(img),
+    .back:has(img) {
+      padding: 0;
+    }
+
+    .front img,
+    .back img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .front::after,
+    .back::after {
+      position: absolute;
+      bottom: 1em;
+      counter-increment: page;
+      content: counter(page) ".";
+      font-size: 0.8em;
+    }
+
+    .cover::after {
+      content: "";
+    }
+
+    .front::after {
+      right: 1em;
+    }
+
+    .front {
+      background: linear-gradient(to left, #f7f7f7 80%, #eee 100%);
+      border-radius: 0.1em 0.5em 0.5em 0.1em;
+    }
+
+    .back::after {
+      left: 1em;
+    }
+
+    .back {
+      background-image: linear-gradient(to right, #f7f7f7 80%, #eee 100%);
+      border-radius: 0.5em 0.1em 0.1em 0.5em;
+    }
+
+    .cover {
+      background: url("./cover.jpg") 50% / cover no-repeat;
+      background-color: hsl(231, 32%, 29%);
+      color: #fff;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin-bottom: 1px;
+      color: hsl(0, 100%, 30%);
+    }
+
+    p {
+      margin-top: 1px;
+      margin-bottom: 8px;
+      line-height: 1.4;
+      color: hsl(0, 100%, 30%);
+    }
+
+    .front,
+    .back {
+      padding: 1.5em;
+      color: hsl(0, 100%, 30%);
+    }
+
+    .book {
+      width: 40cqmin;
+      /* Slightly increased width */
+    }
+
+    .page {
+      font-size: 2cqmin;
+      /* Slightly increased font size */
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    .front,
+    .back {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 1.5em;
+    }
+
+    h2 {
+      margin-bottom: 5px;
+    }
+
+    p {
+      margin-top: 5px;
+      line-height: 1.4;
+    }
+
+    /* Uçan saydam kalpler */
+    .floating-heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.5);
+      transform: rotate(45deg);
+      animation: floatHeart 15s infinite ease-in-out;
+      z-index: 0;
+    }
+
+    .floating-heart::before,
+    .floating-heart::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+    }
+
+    .floating-heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .floating-heart::after {
+      left: -10px;
+      top: 0;
+    }
+
+    @keyframes floatHeart {
+      0%, 100% {
+        transform: translateY(0) translateX(0) rotate(45deg) scale(1);
+        opacity: 0.5;
+      }
+      50% {
+        transform: translateY(-80px) translateX(40px) rotate(45deg) scale(1.2);
+        opacity: 0.8;
+      }
+    }
+
+    /* Sparkle effect */
+    .sparkle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      animation: sparkle 3s infinite;
+      z-index: 1;
+    }
+
+    @keyframes sparkle {
+      0%, 100% {
+        opacity: 0;
+        transform: scale(0);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.5);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="floating-heart" style="left: 10%; top: 20%; animation-delay: 0s;"></div>
+  <div class="floating-heart" style="left: 85%; top: 60%; animation-delay: 2s;"></div>
+  <div class="floating-heart" style="left: 50%; top: 80%; animation-delay: 4s;"></div>
+  <div class="floating-heart" style="left: 20%; top: 40%; animation-delay: 6s;"></div>
+  <div class="floating-heart" style="left: 90%; top: 30%; animation-delay: 8s;"></div>
+  <div class="floating-heart" style="left: 70%; top: 70%; animation-delay: 10s;"></div>
+
+  <div class="book">
+    <div class="page">
+      <div class="front cover">
+        <h1 style="
+              color: rgb(255, 255, 255);
+              text-shadow: 5px 2px 5px rgb(0, 0, 0);
+            ">
+          Sana Özel Mesaj 🤍
+        </h1>
+
+        <p style="
+              color: rgb(255, 255, 255);
+              text-shadow: 5px 2px 5px rgb(0, 0, 0);
+            ">
+          2026.<br />Özel Baskı
+        </p>
+      </div>
+      <div class="back">
+        <h2>Özel Bir Başlangıç ❤️✨</h2>
+
+        <p>Bazı insanlar hayatımıza hiç beklemediğimiz anda girer ve silinmez bir iz bırakır. Sen de o nadir ruhlardan birisin;
+          her anı biraz daha özel hissettiren.
+
+          İlk konuşmamızdan itibaren bir şey dikkatimi çekti—nazikliğin, caziben ve etrafındaki dünyayı zahmetsizce
+          aydınlatan tarzın.
+
+          Bu sadece kelimelerden oluşan bir derleme değil; sana ne kadar değer verdiğimi göstermenin küçük bir yolu.
+          Takdir edildiğini, hayran olunduğunu ve gerçekten özel olduğunu hatırlatmak için.
+
+          O halde kısaca: sohbetlerimize, bağımıza ve gelecek güzel anlara. 💖</p>
+
+        <p>
+          Okumaya başlamadan önce videoyu izle... <br />8 Ocak 2021'den beri
+          Instagram'da bağlantıdayız...
+        </p>
+      </div>
+    </div>
+    <!--2nd page-->
+    <div class="page">
+      <div class="front">
+        <h2>Yabancılardan Özel Bir Şeye ❤️✨</h2>
+        <p>
+          Birkaç gün önce seni hiç tanımadığımı düşünmek inanılmaz. Seninle Instagram sayesinde tanışmak,
+          her zaman minnettar kalacağım bir kader anı oldu.
+
+          Başta nasıl bağ kuracağımızı, neler konuşacağımızı, nasıl biri olduğunu bilmiyordum. Ama şimdi
+          seninle vakit geçirdikten sonra gerçekten özel bir şey fark ettim—
+
+          Kesinlikle harikasın. 💖
+
+          Sözlerin, nazikliğin ve beni gülümseten tarzın çoktan kalbimde yer edindi. Senin gibi biriyle
+          tanışmayı beklemiyordum; şimdiyse seni hayatımda düşünmemek mümkün değil.
+
+          Belki kaderdi, belki sadece şans—ama ne olursa olsun, beni sana getirdiği için mutluyum. 💕
+        </p>
+      </div>
+      <div class="back">
+        <img src="./1.jpg" alt="Img 1" />
+      </div>
+    </div>
+    <!--3rd page-->
+    <div class="page">
+      <div class="front">
+        <h2>Senin Büyün ✨💖</h2>
+        <p>
+          Sende kelimelerin anlatmakta zorlandığı bir cazibe, bir güzellik var. Gözlerindeki pırıltıda,
+          gülüşündeki sıcaklıkta ve her anı zahmetsizce aydınlatan tarzında. Hakkındaki her küçük şey o kadar
+          mükemmel, o kadar büyüleyici ki sık sık merak ediyorum—
+
+          Bir başyapıt gibi mi yaratıldın?
+
+          Sanki evren zaman ayırıp senin gibi harika birini özenle şekillendirmiş, dünyayı biraz daha aydınlık
+          yapmak için. Ve inan, öyle yapıyorsun. Her gün. 💕
+
+          Varlığın yumuşak bir melodi gibi; rahatlatıcı ama unutulmaz. Kendini taşıyışın, yüreğindeki iyilik
+          ve ruhundaki saflık seni daha da özel yapıyor. Sadece görünüşün değil—gerçekten ne kadar güzel
+          olduğun.
+
+          Seni her gördüğümde, hayatta bazı şeylerin gerçekten büyülü olduğunu hatırlıyorum; ve sen, şüphesiz,
+          onlardan birisin. ✨💖
+        </p>
+      </div>
+      <div class="back">
+        <h2>İçindeki Güç 💫✨</h2>
+        <p>
+          Güzelliğinin ötesinde asıl öne çıkan, adanmışlığın, çalışkanlığın ve tutkun. Sadece görünüşün için
+          hayran olunacak biri değilsin—ilham kaynağısın. Odaklanman, hayallerinin peşinden gitmen ve her şeyde
+          elinden geleni yapman seni daha da saygıyla karşılamamı sağlıyor.
+
+          Gerçek bir lidersin.
+
+          Özgüvenin, kibarlığın ve gücün seni farklı kılıyor. Sadece bir yolu takip etmiyorsun—yol açıyorsun.
+          Kararlılığını görmek, gerçek güzelliğin sadece görünüşte değil, içindeki ateşte olduğunu hatırlatıyor.
+          Seni gerçekten inanılmaz yapan da bu. 💖✨
+
+          Senin için zorluğu büyük olan yok, ulaşılamayacak hedef yok. Etrafındakilere daha iyi olmaya, daha büyük
+          hayaller kurmaya ve kendine inanmaya ilham veriyorsun. Büyüyüp bu kadar şeyi başarmanı izlemek, seni tanıdığım
+          için beni gururlandırıyor. 🌟
+        </p>
+      </div>
+    </div>
+    <!--4th page-->
+    <div class="page">
+      <div class="front">
+        <h2>Günümün En Güzel Parçası 🤞💖</h2>
+        <p>
+          Seninle konuşmak günümün en güzel anlarından biri oldu. Senden bir mesaj her gördüğümde
+          gülümsemekten kendimi alamıyorum—küçük bir mutluluk kıvılcımı gibi. Günüm nasıl geçerse geçsin, sohbetlerimiz
+          her şeyi daha hafif ve aydınlık hissettiriyor.
+
+          En sade anları bile özel kılma gücün var.
+
+          Sadece ne kadar güzel olduğun değil; konuşma tarzındaki sıcaklık, incelik ve cazibe. Sözlerin
+          beni rahatlatan bir büyü taşıyor, varlığın tek başına neşe getiriyor.
+
+          Bir sohbetin bu kadar çok şey ifade edebileceğini bilmezdim; seninle öyle. 💕
+        </p>
+      </div>
+      <div class="back">
+        <img src="./2.jpg" alt="Img 1" />
+      </div>
+    </div>
+    <!--5th page-->
+    <div class="page">
+      <div class="front">
+        <h1>Yüreğimden Bir Dilek 💫💖</h1>
+        <p>
+          Bazen seninle yüz yüze tanışmayı diliyorum; günümü aydınlatan gülüşünü görmek ve her şeyi hafifleten
+          sesini duymak için. Belki uzak bir ihtimal ama düşünce hep aklımda.
+
+          Birbirimizi kısa süredir tanıyor olsak da umarım beni unutmazsın. Anlarımız, sohbetlerimiz—bana
+          düşündüğünden fazla şey ifade ediyor.
+
+          Ne olursa olsun, sana mutluluk, huzur ve hak ettiğin her şeyle dolu bir hayat diliyorum. 💕
+
+          Sen özel birisin ve umarım hayat sana gülmek için bitmeyen nedenler verir. Buradan sonra nereye
+          gidersek gidelim, paylaştığımız zaman için her zaman minnettar kalacağım. Kader izin verirse, belki
+          bir gün yollarımız gerçekten kesişir. ✨
+        </p>
+      </div>
+      <div class="back">
+        <h1>Her Zaman Yanındayım 💖✨</h1>
+        <p>
+          Bir ilham kaynağısın ve ne olursa olsun her zaman yanında olacağımı bilmeni istiyorum. Bir şeye
+          ihtiyaç duyduğunda—dinleyen, destek olan ya da sadece seni gülümseten biri—bir mesaj kadar uzağındayım.
+
+          Zamanım ihtiyaç duyduğun her an senin.
+
+          Hayat öngörülemez olabilir ama umarım kendini hiç yalnız hissetmezsin. İyi gün olsun zor gün olsun,
+          seni yüreklendirmek ve ne kadar harika olduğunu hatırlatmak için hep burada olacağım.
+
+          Sadece mutluluğu hak ediyorsun; buna küçük bir katkım olabilirse onur duyarım. Hayat bizi nereye
+          götürürse götürsün, seni önemseyen—sana gerçekten inanan biri olduğunu bil. 💕
+        </p>
+      </div>
+    </div>
+    <!--6th page-->
+    <div class="page">
+      <div class="front">
+        <h2>Senin Güzelliğin ✨💖</h2>
+        <p>
+          Giydiğin her şeyde ne kadar çarpıcı göründüğünü bir an takdir edebilir miyiz? Sadece kıyafetler
+          değil—özgüvenin, zarafetin ve kendini taşıyışın seni gerçekten unutulmaz kılıyor.
+
+          Başları çeviren bir varlığın, kalpleri cezbeden bir caziben var.
+
+          İnsanları kendine çeken bir tarafın var—belki zerafetin, sıcaklığın ya da girdiğin her odayı
+          aydınlatan halin. Her neyse, reddedilemez ve seni her açıdan kesinlikle mükemmel yapıyor.
+
+          Ama güzelliğinin ötesinde, kibarlığın ve başkalarını özel hissettirme biçimin seni gerçekten farklı
+          kılıyor. Pozitiflik yayıyorsun, enerjin nadir ve değerli.
+
+          Nerede olursan ol, ne yaparsan yap, silinmez bir iz bırakıyorsun. Sadece güzel değilsin—olağanüstüsün. 💖✨
+        </p>
+      </div>
+      <div class="back">
+        <h2>Nefes Kesen ✨💖</h2>
+        <p>
+          Giydiğin her şeyde nefes kesici görünüyorsun. Sadece görünüşün değil—kendini o özgüven ve
+          zarafetle taşıman seni gerçekten büyüleyici yapıyor.
+
+          Sana tamamen hayranım.
+
+          Varlığın tek başına her mekânı aydınlatabilir, enerjin basbayağı manyetik. Hareket edişin, gülüşün,
+          başkalarını rahat hissettirişin—hepsi o reddedilemez cazibenin parçası.
+
+          Sadece baş çevirtmiyorsun; kalıcı izler bırakıyorsun. Sende öyle zahmetsizce büyüleyici bir şey var ki
+          bakışları senden ayırmak imkansız.
+
+          Sadece güzel değilsin—için dışın bir sanat eserisin. 💕✨
+        </p>
+      </div>
+    </div>
+    <!--7th page-->
+    <div class="page">
+      <div class="front">
+        <h2>Sana Minnettarım 🌹❤</h2>
+        <p>
+          Sadece sana ne kadar değer verdiğimi bir an dile getirmek istedim. En başından beri gerçekten özel
+          biri oldun—kelimelerin anlatamayacağı kadar hayran olduğum biri.
+
+          Seninle tanışmak, kısa da sürse, bir hediye oldu.
+
+          Nazikliğin, varlığın ve her sohbeti anlamlı kılışın bana düşündüğünden fazla şey ifade ediyor.
+          Yollarımızın kesişmesine minnettarım; gelecek ne getirirse getirsin, sana her zaman minnettar kalacağım.
+
+          Bazı insanlar denemeden bile kalplerimizde iz bırakır—sen de onlardan birisin. 💕
+        </p>
+      </div>
+      <div class="back">
+        <h2>Benim Olur musun? ❤️✨</h2>
+        <p>Konuşmaya başladığımız andan beri aklımda en güzel haliyle sensin. Nazikliğin, güzelliğin,
+          enerjin—hakkındaki her şey bana o kadar özel geliyor.
+
+          Dünyamı aydınlatıyorsun, günlerimi güzelleştiriyorsun, kalbimi biraz daha dolduruyorsun.
+
+          Geleceğin ne getireceğini bilmiyorum ama bir şeyi biliyorum—yanımda olmanı çok isterim. İşte yüreğimden
+          gelen sorum…
+
+          Benim olur musun? 💖💕 </p>
+      </div>
+    </div>
+
+    <div class="page">
+      <div class="front">
+        <img src="./4.jpg" alt="Img 4" />
+      </div>
+      <div class="back cover">
+        <h3>En Tatlı Kraliçe</h3>
+        <p>
+          İçerik: Özel Baskı<br /><a href="" target="_blank" rel="nofollow"></a>
+
+          <br />
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const flipBook = (elBook) => {
+      elBook.style.setProperty("--c", 0); // Set current page
+      elBook.querySelectorAll(".page").forEach((page, idx) => {
+        page.style.setProperty("--i", idx);
+        page.addEventListener("click", (evt) => {
+          if (evt.target.closest("a")) return;
+          const curr = evt.target.closest(".back") ? idx : idx + 1;
+          elBook.style.setProperty("--c", curr);
+        });
+      });
+    };
+
+    document.querySelectorAll(".book").forEach(flipBook);
+
+    function createSparkle() {
+      const sparkle = document.createElement('div');
+      sparkle.classList.add('sparkle');
+      sparkle.style.left = Math.random() * window.innerWidth + 'px';
+      sparkle.style.top = Math.random() * window.innerHeight + 'px';
+      sparkle.style.animationDelay = Math.random() * 2 + 's';
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 3000);
+    }
+    setInterval(createSparkle, 400);
+  </script>
+
+</body>
+
+</html>
